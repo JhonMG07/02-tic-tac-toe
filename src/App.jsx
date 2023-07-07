@@ -32,29 +32,40 @@ function App() {
   const [turn, setTurn] = useState(TURNS.X);
   const [winner, setWinner] = useState(null); // null= no hay ganaador y false = hay empate
 
-  const checkWinner = (boardToCheck) =>{
-    for(const combo of WINNER_COMBOS){
-      const [a,b,c] = combo;
+  const checkWinner = (boardToCheck) => {
+    for (const combo of WINNER_COMBOS) {
+      const [a, b, c] = combo;
 
-      
+      if (
+        boardToCheck[a] &&
+        boardToCheck[a] === boardToCheck[b] &&
+        boardToCheck[a] === boardToCheck[c]
+      ) {
+        return boardToCheck[a];
+      }
     }
-
-  }
-  
-
+    return null;
+  };
 
   const updateBoard = (index) => {
     //Si ya hay algo en esa posicion no actualizar
-    if (board[index]) return;
+    if (board[index] || winner) return;
 
     //los datos siempre deben ser nuevos (principio de inmutabilidad. Usar siempre set para modificar un estado)
     const newBoard = [...board];
     newBoard[index] = turn;
-    setBoard(newBoard);
+    setBoard(newBoard); // las actualizaciones son asincronas
 
     //cambiar el turno
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X;
     setTurn(newTurn);
+    
+    //revisar si hay ganador
+    const newWinner = checkWinner(newBoard);
+    if (newWinner) {
+      alert(`El ganador es ${newWinner}`);
+      setWinner(newWinner);
+    }
   };
 
   return (
